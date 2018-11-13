@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/influxdata/influxdb/client/v2"
 	"github.com/modmuss50/CAV2"
-	"github.com/modmuss50/goutils"
 	"log"
 	"strconv"
 	"time"
@@ -33,24 +32,6 @@ func run() {
 	}
 	defer c.Close()
 
-	users := goutils.ReadLinesFromFile("userLookup.txt")
-
-	for _, user := range users {
-		fmt.Println("Processing " + user)
-		addons, err := cav2.Search(user)
-		if err != nil {
-			fmt.Print(err)
-			continue
-		}
-		for _, addon := range addons {
-			writeAddon(addon, c)
-		}
-	}
-
-	c.Close()
-}
-
-func writeAddon(addon cav2.Addon, c client.Client) {
 	bp, err := client.NewBatchPoints(client.BatchPointsConfig{
 		Database:  DB,
 		Precision: "s", //Write the data with a precision of seconds, this is prob overkill
@@ -58,6 +39,31 @@ func writeAddon(addon cav2.Addon, c client.Client) {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	fmt.Println("Loading addons")
+	addons, err := cav2.GetAllAddons()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println("Building db query with " + strconv.Itoa(len(addons)) + " addons")
+
+	for _, addon := range addons {
+		writeAddon(addon, bp)
+	}
+
+	fmt.Println("Writing to db")
+
+	if err := c.Write(bp); err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println("All done")
+
+	c.Close()
+}
+
+func writeAddon(addon cav2.Addon, bp client.BatchPoints) {
 
 	tags := map[string]string{
 		"projectID": strconv.Itoa(addon.ID),
@@ -79,8 +85,4 @@ func writeAddon(addon cav2.Addon, c client.Client) {
 		log.Fatal(err)
 	}
 	bp.AddPoint(pt)
-
-	if err := c.Write(bp); err != nil {
-		log.Fatal(err)
-	}
 }
