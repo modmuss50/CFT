@@ -19,7 +19,7 @@ var (
 
 func main() {
 
-	DB = flag.String("database", "curse_downloadstats", "Database name")
+	DB = flag.String("database", "curse_download_stats", "Database name")
 	url = flag.String("url", "http://127.0.0.1:8086", "Database URL")
 	username = flag.String("username", "test", "Database username")
 	password = flag.String("password", "test", "Database password")
