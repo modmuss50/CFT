@@ -78,6 +78,7 @@ func writeAddon(addon cav2.Addon, bp client.BatchPoints) {
 	tags := map[string]string{
 		"projectID": strconv.Itoa(addon.ID),
 		"ownerName": addon.Authors[0].Name,
+		"slug":      addon.Slug,
 	}
 
 	fields := map[string]interface{}{
