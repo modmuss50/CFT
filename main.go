@@ -12,6 +12,7 @@ import (
 
 var (
 	DB       *string
+	url      *string
 	username *string
 	password *string
 )
@@ -19,6 +20,7 @@ var (
 func main() {
 
 	DB = flag.String("database", "curse_downloadstats", "Database name")
+	url = flag.String("url", "http://127.0.0.1:8086", "Database URL")
 	username = flag.String("username", "test", "Database username")
 	password = flag.String("password", "test", "Database password")
 
@@ -31,7 +33,7 @@ func main() {
 
 func run() {
 	c, err := client.NewHTTPClient(client.HTTPConfig{
-		Addr:     "http://10.0.0.104:8086",
+		Addr:     *url,
 		Username: *username,
 		Password: *password,
 	})
