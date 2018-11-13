@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"github.com/influxdata/influxdb/client/v2"
 	"github.com/modmuss50/CAV2"
@@ -9,13 +10,20 @@ import (
 	"time"
 )
 
-const (
-	DB       = "project_download_stats_1"
-	username = "test"
-	password = "test"
+var (
+	DB       *string
+	username *string
+	password *string
 )
 
 func main() {
+
+	DB = flag.String("database", "curse_downloadstats", "Database name")
+	username = flag.String("username", "test", "Database username")
+	password = flag.String("password", "test", "Database password")
+
+	flag.Parse()
+
 	cav2.SetupDefaultConfig()
 	run()
 
@@ -24,8 +32,8 @@ func main() {
 func run() {
 	c, err := client.NewHTTPClient(client.HTTPConfig{
 		Addr:     "http://10.0.0.104:8086",
-		Username: username,
-		Password: password,
+		Username: *username,
+		Password: *password,
 	})
 	if err != nil {
 		log.Fatal(err)
@@ -33,7 +41,7 @@ func run() {
 	defer c.Close()
 
 	bp, err := client.NewBatchPoints(client.BatchPointsConfig{
-		Database:  DB,
+		Database:  *DB,
 		Precision: "s", //Write the data with a precision of seconds, this is prob overkill
 	})
 	if err != nil {
