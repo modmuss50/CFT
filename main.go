@@ -11,10 +11,11 @@ import (
 )
 
 var (
-	DB       *string
-	url      *string
-	username *string
-	password *string
+	DB           *string
+	url          *string
+	username     *string
+	password     *string
+	minDownloads *float64
 )
 
 func main() {
@@ -23,6 +24,8 @@ func main() {
 	url = flag.String("url", "http://127.0.0.1:8086", "Database URL")
 	username = flag.String("username", "test", "Database username")
 	password = flag.String("password", "test", "Database password")
+
+	minDownloads = flag.Float64("downloads", 5000, "The minimum required amount of downloads for a project to be written to the database")
 
 	flag.Parse()
 
@@ -55,6 +58,17 @@ func run() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	isValid := func(addon cav2.Addon) bool { return addon.DownloadCount > *minDownloads }
+
+	i := 0
+	for _, addon := range addons {
+		if isValid(addon) {
+			addons[i] = addon
+			i++
+		}
+	}
+	addons = addons[:i]
 
 	fmt.Println("Building db query with " + strconv.Itoa(len(addons)) + " addons")
 
