@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/influxdata/influxdb/client/v2"
+	"github.com/influxdata/influxdb1-client/v2"
 	"github.com/modmuss50/CAV2"
 	"log"
 	"strconv"
@@ -93,6 +93,7 @@ func writeAddon(addon cav2.Addon, bp client.BatchPoints) {
 		"projectID": strconv.Itoa(addon.ID),
 		"ownerName": addon.Authors[0].Name,
 		"slug":      addon.Slug,
+		"type":      addon.CategorySection.Name,
 	}
 
 	fields := map[string]interface{}{
