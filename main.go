@@ -97,7 +97,7 @@ func writeAddon(addon cav2.Addon, bp client.BatchPoints) {
 	}
 
 	fields := map[string]interface{}{
-		"downloads": int(addon.DownloadCount),
+		"downloads": addon.DownloadCount,
 	}
 
 	pt, err := client.NewPoint(
