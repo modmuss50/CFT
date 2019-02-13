@@ -16,6 +16,7 @@ var (
 	username     *string
 	password     *string
 	minDownloads *float64
+	debug        *bool
 )
 
 func main() {
@@ -26,6 +27,8 @@ func main() {
 	password = flag.String("password", "test", "Database password")
 
 	minDownloads = flag.Float64("downloads", 0, "The minimum required amount of downloads for a project to be written to the database (0 to disable)")
+
+	debug = flag.Bool("debug", false, "Enable debug loging")
 
 	flag.Parse()
 
@@ -98,6 +101,10 @@ func writeAddon(addon cav2.Addon, bp client.BatchPoints) {
 
 	fields := map[string]interface{}{
 		"downloads": addon.DownloadCount,
+	}
+
+	if *debug {
+		fmt.Printf("%s - %f\n", addon.Name, addon.DownloadCount)
 	}
 
 	pt, err := client.NewPoint(
